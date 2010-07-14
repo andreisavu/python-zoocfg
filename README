@@ -1,0 +1,6 @@
+
+ZooKeeper Config Parser & Validator
+-----------------------------------
+
+A Python class for parsing and validating ZooKeeper config files.
+
