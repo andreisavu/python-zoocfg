@@ -18,8 +18,31 @@
 
 import unittest
 
+from zoocfg import ZooCfg
+
 class TestZooCfg(unittest.TestCase):
-    pass
+    
+    def test_parse_two_lines(self):
+        cfg = ZooCfg('a=23\nb=asd')
+
+        assert cfg.a == 23
+        assert cfg.b == 'asd'
+
+    def test_skip_broken_lines(self):
+        cfg = ZooCfg('broken-line\na=3')
+
+        assert cfg.a == 3
+
+    def test_default_values(self):
+        cfg = ZooCfg()
+
+        assert cfg.snapCount == 100000
+        assert cfg.electionAlg == 3
+
+    def test_overwrite_default_value(self):
+        cfg = ZooCfg('electionAlg=4')
+
+        assert cfg.electionAlg == 4
 
 if __name__ == '__main__':
     unittest.main()

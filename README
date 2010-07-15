@@ -2,5 +2,7 @@
 ZooKeeper Config Parser & Validator
 -----------------------------------
 
+Target: ZooKeeper 3.3.1 
+
 A Python class for parsing and validating ZooKeeper config files.
 
