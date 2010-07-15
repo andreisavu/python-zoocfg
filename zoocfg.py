@@ -30,14 +30,8 @@ class ZooCfg(object):
     }
     
     def __init__(self, content=''):
-        self._data = self._parse(content)
-        self._set_defaults()
-
-
-    def _set_defaults(self):
-        for k, v in self._defaults.iteritems():
-            if k not in self._data:
-                self._data[k] = v
+        self._data = dict(self._defaults)
+        self._data.update(self._parse(content))
 
     def _parse(self, content):
         h = StringIO(content)
