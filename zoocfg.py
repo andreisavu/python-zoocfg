@@ -156,6 +156,24 @@ class Rules(object):
 
             return warnings, errors            
 
+    class ElectionAlgorithm(BaseRule):
+        """ Check the selected election algorithm """
+
+        @classmethod
+        def check(cls, cfg):
+            warnings, errors = [], []
+
+            if 'electionAlg' not in cfg:
+                errors.append('No `electionAlg` found in config file.')
+
+            elif cfg.electionAlg not in (0, 1, 2, 3):
+                errors.append('Unknown `electionAlg`. Valid values: 0, 1, 2, 3.')
+
+            elif cfg.electionAlg in (1, 2):
+                warnings.append('Election algorithm implementation 1 and 2 are no longer supported.')
+
+            return warnings, errors
+
 def main(argv):
     parser = OptionParser()
 
