@@ -136,6 +136,9 @@ class Rules(object):
             elif not isinstance(cfg.clientPort, int) or cfg.clientPort < 0 or cfg.clientPort > 65535:
                 errors.append('`clientPort` should be a valid TCP/IP port number.')
 
+            elif cfg.clientPort < 1024:
+                warnings.append('`clientPort` < 1024. You should not run ZooKeeper using the root account')
+
             return warnings, errors
 
     class TickTime(BaseRule):
