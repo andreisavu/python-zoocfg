@@ -57,6 +57,12 @@ class TestZooCfg(unittest.TestCase):
 
         assert cfg.dataDir == '/var/zookeeper/data/'
 
+    def test_ignore_comments(self):
+        cfg = ZooCfg('#a=5\nb=6')
+
+        assert hasattr(cfg, '#a') is False
+        assert cfg.b == 6
+
 class CapturingTestCase(unittest.TestCase):
 
     def _in_memory_buffer(self, stream, *args):

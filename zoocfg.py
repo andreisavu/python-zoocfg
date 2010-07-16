@@ -49,7 +49,8 @@ class ZooCfg(object):
         h = StringIO(content)
         result = {}
         for line in h.readlines():
-            if not line.strip(): continue
+            if not line.strip() or line[0] == '#':
+                continue
             result.update(self._parse_line(line))
         return result
 
