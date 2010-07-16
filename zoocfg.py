@@ -138,6 +138,22 @@ class Rules(object):
 
             return warnings, errors
 
+    class TickTime(BaseRule):
+        """ The length of a single tick, which is the basic time unit used by ZooKeeper, measured in milliseconds"""
+
+        @classmethod
+        def check(cls, cfg):
+            warnings, errors = [], []
+
+            if 'tickTime' not in cfg:
+                errors.append('No `tickTime` found in config file.')
+
+            elif not isinstance(cfg.tickTime, int) or cfg.tickTime <= 0:
+                errors.append('`tickTime` should be a positive number measured in milliseconds')
+
+            return warnings, errors
+
+
     class AbsoluteDataDir(BaseRule):
         """ The dataDir should be absolute because ZooKeeper runs as a daemon """
 
