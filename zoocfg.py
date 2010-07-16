@@ -46,8 +46,7 @@ class ZooCfg(dotdict):
     def __init__(self, content=''):
         self.update(self._defaults)
         self.update(self._parse(content))
-
-        self._warnings, self._errors = Rules.check(self)
+        self._warnings, self._errors = Rules.check_all(self)
 
     def _parse(self, content):
         h = StringIO(content)
@@ -97,7 +96,7 @@ class Rules(object):
     """ ZooKeeper config validation rules """
 
     @classmethod
-    def check(cls, cfg):
+    def check_all(cls, cfg):
         """ Check all configuration rules """
         warnings, errors = [], []
 
