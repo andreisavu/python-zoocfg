@@ -157,7 +157,7 @@ class Rules(object):
             return warnings, errors
 
 
-    class AbsoluteDataDir(BaseRule):
+    class DataDir(BaseRule):
         """ The dataDir should be absolute because ZooKeeper runs as a daemon """
 
         @classmethod
@@ -173,7 +173,7 @@ class Rules(object):
 
             return warnings, errors
 
-    class DataLogDirOnAnotherPartition(BaseRule):
+    class DataLogDir(BaseRule):
         """ Warn that dataLogDir should be on another partition """
 
         @classmethod
@@ -190,7 +190,7 @@ class Rules(object):
 
             return warnings, errors            
 
-    class ElectionAlgorithm(BaseRule):
+    class ElectionAlg(BaseRule):
         """ Check the selected election algorithm """
 
         @classmethod

@@ -108,7 +108,7 @@ class TestZooCfg_CommandLine_Interface(CapturingTestCase):
 class TestRules(unittest.TestCase):
 
     def test_absolute_dataDir(self):
-        w, e = zoocfg.Rules.AbsoluteDataDir.check(
+        w, e = zoocfg.Rules.DataDir.check(
             dotdict(dataDir='./relative-path'))
 
         assert len(w) == 1 and len(e) == 0
