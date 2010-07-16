@@ -21,7 +21,12 @@ import sys
 from StringIO import StringIO
 from optparse import OptionParser
 
-class ZooCfg(dict):
+class dotdict(dict):
+    """ Extend the standard dict to allow dot syntax """
+    def __getattr__(self, name):
+        return self[name]
+
+class ZooCfg(dotdict):
 
     _defaults = {
         'globalOutstandingLimit': 1000,
@@ -73,9 +78,6 @@ class ZooCfg(dict):
         except ValueError:
             return {} # just skip broken line
 
-    def __getattr__(self, name):
-        return self[name]
-
     def has_errors(self):
         return bool(self._errors)
 
@@ -83,10 +85,12 @@ class ZooCfg(dict):
         return bool(self._warnings)
 
     @property
-    def errors(self): return tuple(self._errors)
+    def errors(self): 
+        return tuple(self._errors)
 
     @property
-    def warnings(self): return tuple(self._warnings)
+    def warnings(self): 
+        return tuple(self._warnings)
 
 
 class Rules(object):

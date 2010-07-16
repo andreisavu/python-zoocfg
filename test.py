@@ -22,7 +22,7 @@ import os
 from StringIO import StringIO
 
 import zoocfg
-from zoocfg import ZooCfg
+from zoocfg import ZooCfg, dotdict
 
 def abspath(*args):
     current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -104,11 +104,6 @@ class TestZooCfg_CommandLine_Interface(CapturingTestCase):
         r = zoocfg.main([])
         assert r == -1 
         assert self.stderr() == 'Config file name is mandatory.\n'
-
-class dotdict(dict):
-    """ Extend the standard dict to allow dot syntax """
-    def __getattr__(self, name):
-        return self[name]
 
 class TestRules(unittest.TestCase):
 
