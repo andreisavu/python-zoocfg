@@ -233,6 +233,18 @@ class Rules(object):
 
             return warnings, errors
 
+    class TraceFile(BaseRule):
+        """ Enable the tracefile. Useful for debugging but this will impact performance. """
+
+        @classmethod
+        def check(cls, cfg):
+            warnings, errors = [], []
+
+            if 'traceFile' in cfg:
+                warnings.append('Enabling the tracefile will impact system performance')
+
+            return warnings, errors
+
     class ElectionAlg(BaseRule):
         """ Check the selected election algorithm """
 

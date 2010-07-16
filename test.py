@@ -161,6 +161,10 @@ class TestRules(unittest.TestCase):
         self.check('SnapCount', 1, 0, snapCount=100)
         self.check('SnapCount', 0, 0, snapCount=10000)
 
+    def test_traceFile(self):
+        self.check('TraceFile', 0, 0)
+        self.check('TraceFile', 1, 0, traceFile='traceFile')
+
     def test_ElectionAlg(self):
         self.check('ElectionAlg', 0, 1, electionAlg=5)
         self.check('ElectionAlg', 1, 0, electionAlg=1)
