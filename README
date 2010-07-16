@@ -2,7 +2,36 @@
 ZooKeeper Config Parser & Validator
 -----------------------------------
 
-Target: ZooKeeper 3.3.1 
+Target: ZooKeeper 3.3.x
 
-A Python class for parsing and validating ZooKeeper config files.
+Author: Andrei Savu -- http://www.andreisavu.ro/  
+
+A Python class for Parsing and Validating ZooKeeper config files.
+
+Usage
+-----
+
+This class can be used in two ways:
+
+* by importing it in your scripts
+
+    from zoocfg import ZooCfg
+
+    cfg = ZooCfg.from_file('zoo.cfg')
+    cfg = ZooCfg(file_content)
+
+* or by using the command-line tool
+
+    ./zoocfg.py -f zoo.cfg -w
+    -- will output errors and warnings found while checking the rules
+
+ZooKeeper config rules
+----------------------
+
+TBD
+
+Known Issues
+------------
+
+* no support for hierarhical groups and weights
 
