@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+#
 #  Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -14,7 +16,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
+
 from StringIO import StringIO
+from optparse import OptionParser
 
 class ZooCfg(object):
 
@@ -28,6 +33,10 @@ class ZooCfg(object):
         'electionAlg': 3,
         'leaderServers': 'yes'
     }
+
+    @classmethod
+    def from_file(cls, file_name):
+        return cls(open(file_name).read())
     
     def __init__(self, content=''):
         self._data = dict(self._defaults)
@@ -57,4 +66,40 @@ class ZooCfg(object):
     def __getattr__(self, name):
         return self._data[name]
 
+    def has_errors(self):
+        return False
+
+    def has_warnings(self):
+        return False
+
+
+def main(argv):
+    parser = OptionParser()
+
+    parser.add_option('-f', '--file', dest='filename', 
+        help="ZooKeeper config FILE", metavar="FILE")
+
+    parser.add_option('-w', '--warnings', dest='warnings',
+        default=False, action='store_true', 
+        help='show warnings. defaults to false')
+
+    (opts, args) = parser.parse_args(argv)
+
+    if opts.filename is None:
+        print >>sys.stderr, "Config file name is mandatory."
+
+        parser.print_help()
+        return 1
+
+    cfg = ZooCfg.from_file(opts.filename)
+    if cfg.has_errors():
+        # print errors
+        pass
+
+    if cfg.has_warnings() and opts.warnings is True:
+        # print warnings
+        pass
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]))
 

@@ -17,8 +17,16 @@
 # limitations under the License.
 
 import unittest
+import sys
+import os
+from StringIO import StringIO
 
+import zoocfg
 from zoocfg import ZooCfg
+
+def abspath(*args):
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    return os.path.join(current_dir, *args)
 
 class TestZooCfg(unittest.TestCase):
     
@@ -43,6 +51,48 @@ class TestZooCfg(unittest.TestCase):
         cfg = ZooCfg('electionAlg=4')
 
         assert cfg.electionAlg == 4
+
+    def test_load_from_file(self):
+        cfg = ZooCfg.from_file(abspath('samples/standalone-zoo.cfg'))
+
+        assert cfg.dataDir == '/var/zookeeper/data/'
+
+class CapturingTestCase(unittest.TestCase):
+
+    def _in_memory_buffer(self, stream, *args):
+        if args:
+            map(self._in_memory_buffer, args)
+        try: 
+            getattr(sys, "_%s" % stream)
+        except: 
+            setattr(sys, "_%s" % stream, getattr(sys, stream))
+        setattr(sys, stream, StringIO())
+
+    def _restore(self, stream, *args):
+        if args:
+            map(self._restore, args)
+        setattr(sys, stream, getattr(sys, '_%s' % stream))
+
+    def setUp(self):
+        self._in_memory_buffer('stdout', 'stderr')
+
+    def tearDown(self):
+        self._restore('stdout', 'stderr')
+
+    def stdout(self):
+        sys.stdout.seek(0)
+        return sys.stdout.read()
+
+    def stderr(self):
+        sys.stderr.seek(0)
+        return sys.stderr.read()
+
+class TestZooCfg_CommandLine_Interface(CapturingTestCase):
+
+    def test_file_param_is_mandatory(self):
+        r = zoocfg.main([])
+        assert r == 1
+        assert self.stderr() == 'Config file name is mandatory.\n'
 
 if __name__ == '__main__':
     unittest.main()
