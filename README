@@ -28,7 +28,7 @@ This class can be used in two ways:
 ZooKeeper config rules
 ----------------------
 
-TBD
+http://hadoop.apache.org/zookeeper/docs/current/zookeeperAdmin.html#sc_configuration
 
 Known Issues
 ------------
