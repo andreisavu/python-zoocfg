@@ -17,10 +17,17 @@ This class can be used in two ways:
 
 * by importing it in your scripts
 
-    from zoocfg import ZooCfg
+    from zoocfg import ZooCfg, Rules
 
     cfg = ZooCfg.from_file('zoo.cfg')
     cfg = ZooCfg(file_content)
+
+    check = Rules.check_all(cfg)
+    if check.has_errors():
+        # we've got errors in the configuration file
+
+    if check.has_warnings():
+        # some things are strange
 
 * or by using the command-line tool
 
