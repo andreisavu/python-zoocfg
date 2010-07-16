@@ -245,6 +245,24 @@ class Rules(object):
 
             return warnings, errors
 
+    class MaxClientCnxns(BaseRule):
+        """ Limit the total number of concurrent connections handle by a member of the ensemble """
+
+        @classmethod
+        def check(cls, cfg):
+            warnings, errors = [], []
+
+            if 'maxClientCnxns' not in cfg:
+                errors.append('`No `maxClientCnxns` found in config file.')
+
+            elif not isinstance(cfg.maxClientCnxns, int) or cfg.maxClientCnxns < 0:
+                errors.append('`maxClientCnxns` should be a positive integer or 0.')
+
+            elif cfg.maxClientCnxns == 0:
+                warnings.append('`maxClientCnxns` is set to 0. The server is vulnerable to DOS attacks.')
+
+            return warnings, errors
+
     class ElectionAlg(BaseRule):
         """ Check the selected election algorithm """
 
