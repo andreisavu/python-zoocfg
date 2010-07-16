@@ -63,6 +63,11 @@ class TestZooCfg(unittest.TestCase):
         assert hasattr(cfg, '#a') is False
         assert cfg.b == 6
 
+    def test_ignore_comments_at_the_end_of_the_line(self):
+        cfg = ZooCfg('a=5 # ignored\nb=6')
+
+        assert cfg.a == 5 and cfg.b == 6
+
 class CapturingTestCase(unittest.TestCase):
 
     def _in_memory_buffer(self, stream, *args):
