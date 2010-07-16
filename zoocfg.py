@@ -48,6 +48,9 @@ class ZooCfg(dotdict):
 
         self.update(self._defaults)
         self.update(self._parse(content))
+        if 'dataLogDir' not in self:
+            self['dataLogDir'] = self['dataDir']
+
         self._warnings, self._errors = Rules.check_all(self)
 
     def _parse(self, content):
@@ -131,9 +134,27 @@ class Rules(object):
                 errors.append('No `dataDir` found in config file.')
 
             elif cfg.dataDir[0] != '/':
-                warnings.append('`dataDir` contains a relative path.')
+                warnings.append('`dataDir` contains a relative path. '\
+                    'This could be a problem if ZooKeeper is running as daemon.')
 
             return warnings, errors
+
+    class DataLogDirOnAnotherPartition(BaseRule):
+        """ Warn that dataLogDir should be on another partition """
+
+        @classmethod
+        def check(cls, cfg):
+            warnings, errors = [], []
+
+            if 'dataLogDir' not in cfg:
+                errors.append('No `dataLogDir` found in config file.')
+
+            elif cfg.dataLogDir == cfg.dataDir:
+                warnings.append('The `dataLogDir` should not use the same partition as `dataDir` '\
+                    'in order to avoid competition between logging and snapshots. Having a '\
+                    'dedicated log device has a large impact on throughput and stable latencies.')
+
+            return warnings, errors            
 
 def main(argv):
     parser = OptionParser()
@@ -158,12 +179,12 @@ def main(argv):
     ret = 0
     if cfg.has_warnings() and opts.warnings is True:
         print 'Warnings:'
-        for warning in cfg.warnings: print '* %s' % warning
+        for warning in cfg.warnings: print '* %s\n' % warning
         ret = 1
 
     if cfg.has_errors():
         print 'Errors:'
-        for error in cfg.errors: print '* %s' % error
+        for error in cfg.errors: print '* %s\n' % error
         ret = 2
 
     return ret
