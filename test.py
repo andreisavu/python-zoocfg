@@ -105,9 +105,29 @@ class TestZooCfg_CommandLine_Interface(CapturingTestCase):
         assert r == -1 
         assert self.stderr() == 'Config file name is mandatory.\n'
 
+    def test_run_checks_on_standalone_config(self):
+        r = zoocfg.main(['-f', 'samples/standalone-zoo.cfg', '-w'])
+        output = """Warnings:
+* The `dataLogDir` should not use the same partition as `dataDir` in order to avoid competition between logging and snapshots. Having a dedicated log device has a large impact on throughput and stable latencies.
+
+"""
+        assert r == 1
+        assert self.stdout() == output
+
+    def test_run_checks_on_replicated_config(self):
+        r = zoocfg.main(['-f', 'samples/replicated-zoo.cfg', '-w'])
+        output = """Warnings:
+* The `dataLogDir` should not use the same partition as `dataDir` in order to avoid competition between logging and snapshots. Having a dedicated log device has a large impact on throughput and stable latencies.
+
+* `dataDir` contains a relative path. This could be a problem if ZooKeeper is running as daemon.
+
+"""
+        assert r == 1
+        assert self.stdout() == output
+
 class TestRules(unittest.TestCase):
 
-    def test_absolute_dataDir(self):
+    def test_dataDir(self):
         w, e = zoocfg.Rules.DataDir.check(
             dotdict(dataDir='./relative-path'))
 

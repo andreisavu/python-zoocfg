@@ -51,8 +51,6 @@ class ZooCfg(dotdict):
         if 'dataLogDir' not in self and 'dataDir' in self:
             self['dataLogDir'] = self['dataDir']
 
-        self._warnings, self._errors = Rules.check_all(self)
-
     def _parse(self, content):
         h = StringIO(content)
         result = {}
@@ -82,20 +80,18 @@ class ZooCfg(dotdict):
         except ValueError:
             return {} # just skip broken line
 
+class RulesResult(object):
+    """ A result obtained by checking all the config rules """
+
+    def __init__(self, warnings, errors):
+        self.warnings = tuple(warnings)
+        self.errors = tuple(errors)
+
     def has_errors(self):
-        return bool(self._errors)
+        return bool(self.errors)
 
     def has_warnings(self):
-        return bool(self._warnings)
-
-    @property
-    def errors(self): 
-        return tuple(self._errors)
-
-    @property
-    def warnings(self): 
-        return tuple(self._warnings)
-
+        return bool(self.warnings)
 
 class Rules(object):
     """ ZooKeeper config validation rules """
@@ -115,7 +111,7 @@ class Rules(object):
             except Exception, e:
                 errors.append('`%s` rule check failed: %s' % (name, e))
 
-        return warnings, errors
+        return RulesResult(warnings, errors)
 
     class BaseRule(object):
         """ Inherit from this class when defining a new validation rule """
@@ -241,16 +237,17 @@ def main(argv):
         return -1
 
     cfg = ZooCfg.from_file(opts.filename)
+    check = Rules.check_all(cfg)
 
     ret = 0
-    if cfg.has_warnings() and opts.warnings is True:
+    if check.has_warnings() and opts.warnings is True:
         print 'Warnings:'
-        for warning in cfg.warnings: print '* %s\n' % warning
+        for warning in check.warnings: print '* %s\n' % warning
         ret = 1
 
-    if cfg.has_errors():
+    if check.has_errors():
         print 'Errors:'
-        for error in cfg.errors: print '* %s\n' % error
+        for error in check.errors: print '* %s\n' % error
         ret = 2
 
     return ret
