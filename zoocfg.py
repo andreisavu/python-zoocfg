@@ -201,6 +201,7 @@ class Rules(object):
             return warnings, errors
 
     class PreAllocSize(BaseRule):
+        """ Transaction log block prealloc size """
 
         @classmethod
         def check(cls, cfg):
@@ -210,7 +211,25 @@ class Rules(object):
                 errors.append('No `preAllocSize` found in config file.')
 
             elif not isinstance(cfg.preAllocSize, int) or cfg.preAllocSize < 0:
-                errors.append('`preAllocSize` should be a positive number of kilobytes')
+                errors.append('`preAllocSize` should be a positive number of kilobytes.')
+
+            return warnings, errors
+
+    class SnapCount(BaseRule):
+        """ The number of transaction processed before a snapshot is generated """
+
+        @classmethod
+        def check(cls, cfg):
+            warnings, errors = [], []
+
+            if 'snapCount' not in cfg:
+                errors.append('No `snapCount` found in config file.')
+
+            elif not isinstance(cfg.snapCount, int) or cfg.snapCount < 0:
+                errors.append('`snapCount` should be a positive integer.')
+
+            elif cfg.snapCount < 5000:
+                warnings.append('Settings `snapCount` to low may hurt server performance.')
 
             return warnings, errors
 

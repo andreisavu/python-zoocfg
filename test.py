@@ -156,6 +156,11 @@ class TestRules(unittest.TestCase):
         self.check('PreAllocSize', 0, 1, preAllocSize=-1)
         self.check('PreAllocSize', 0, 0, preAllocSize=1024)
 
+    def test_snapCount(self):
+        self.check('SnapCount', 0, 1, snapCount=-1)
+        self.check('SnapCount', 1, 0, snapCount=100)
+        self.check('SnapCount', 0, 0, snapCount=10000)
+
     def test_ElectionAlg(self):
         self.check('ElectionAlg', 0, 1, electionAlg=5)
         self.check('ElectionAlg', 1, 0, electionAlg=1)
