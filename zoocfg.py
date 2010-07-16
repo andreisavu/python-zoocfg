@@ -263,6 +263,30 @@ class Rules(object):
 
             return warnings, errors
 
+    class SessionTimeout(BaseRule):
+
+        @classmethod
+        def check(cls, cfg):
+            warnings, errors = [], []
+
+            if 'minSessionTimeout' not in cfg:
+                errors.append('No `minSessionTimeout` found in config file.')
+
+            elif not isinstance(cfg.minSessionTimeout, int) or cfg.minSessionTimeout < 0:
+                errors.append('`minSessionTimeout` should be a positive integer.')
+
+            if 'maxSessionTimeout' not in cfg:
+                errors.append('No `maxSessionTimeout` found in config file.')
+
+            elif not isinstance(cfg.maxSessionTimeout, int) or cfg.maxSessionTimeout < 0:
+                errors.append('`maxSessionTimeout` should be a positive integer.')
+
+            if not errors:
+                if cfg.minSessionTimeout > cfg.maxSessionTimeout:
+                    errors.append('`minSessionTimeout` > `maxSessionTimeout`')
+
+            return warnings, errors
+
     class ElectionAlg(BaseRule):
         """ Check the selected election algorithm """
 

@@ -169,6 +169,16 @@ class TestRules(unittest.TestCase):
         self.check('MaxClientCnxns', 0, 0, maxClientCnxns=10)
         self.check('MaxClientCnxns', 1, 0, maxClientCnxns=0)
 
+    def test_sessionTimeout(self):
+        self.check('SessionTimeout', 0, 0, 
+            minSessionTimeout=10, maxSessionTimeout=20)
+
+        self.check('SessionTimeout', 0, 1,
+            minSessionTimeout=-5, maxSessionTimeout=20)
+
+        self.check('SessionTimeout', 0, 1,
+            minSessionTimeout=20, maxSessionTimeout=10)
+    
     def test_ElectionAlg(self):
         self.check('ElectionAlg', 0, 1, electionAlg=5)
         self.check('ElectionAlg', 1, 0, electionAlg=1)
