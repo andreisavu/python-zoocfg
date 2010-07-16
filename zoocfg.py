@@ -28,7 +28,7 @@ class dotdict(dict):
 
 class ZooCfg(dotdict):
 
-    _defaults = {
+    _defaults = dotdict({
         'globalOutstandingLimit': 1000,
         'preAllocSize': '64M',
         'snapCount': 100000,
@@ -37,7 +37,7 @@ class ZooCfg(dotdict):
         'maxSessionTimeout': 20,
         'electionAlg': 3,
         'leaderServers': 'yes'
-    }
+    })
 
     @classmethod
     def from_file(cls, file_name):
