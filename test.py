@@ -130,7 +130,7 @@ class TestRules(unittest.TestCase):
     def check(self, cls, warning_count, error_count, **kwargs):
         w, e = getattr(zoocfg.Rules, cls).check(dotdict(**kwargs))
         self.assertEqual(len(w), warning_count)
-        self.assertEqual(len(e), error_count)
+        self.assertEqual(len(e), error_count, str(e))
 
     def test_clientPort(self):
         self.check('ClientPort', 1, 0, clientPort=100)
@@ -143,6 +143,19 @@ class TestRules(unittest.TestCase):
     def test_dataDir(self):
         self.check('DataDir', 1, 0, dataDir='./relative-path')
         self.check('DataDir', 0, 0, dataDir='/var/run/zookeeper')
+
+    def test_dataLogDir(self):
+        self.check('DataLogDir', 1, 0, dataDir='/a/b', dataLogDir='/a/b')
+        self.check('DataLogDir', 0, 0, dataDir='/a/b1', dataLogDir='/a/b2')
+
+    def test_globalOutstandingLimit(self):
+        self.check('GlobalOutstandingLimit', 0, 1, globalOutstandingLimit=-5)
+        self.check('GlobalOutstandingLimit', 0, 0, globalOutstandingLimit=5)
+
+    def test_ElectionAlg(self):
+        self.check('ElectionAlg', 0, 1, electionAlg=5)
+        self.check('ElectionAlg', 1, 0, electionAlg=1)
+        self.check('ElectionAlg', 0, 0, electionAlg=3)
 
 if __name__ == '__main__':
     unittest.main()

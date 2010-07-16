@@ -186,7 +186,7 @@ class Rules(object):
 
             return warnings, errors            
 
-    class GlobalOustandingLimit(BaseRule):
+    class GlobalOutstandingLimit(BaseRule):
         
         @classmethod
         def check(cls, cfg):
