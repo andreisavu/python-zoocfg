@@ -42,6 +42,9 @@ class ZooCfg(object):
         self._data = dict(self._defaults)
         self._data.update(self._parse(content))
 
+        self._errors = []
+        self._warnings = []
+
     def _parse(self, content):
         h = StringIO(content)
         result = {}
@@ -67,10 +70,16 @@ class ZooCfg(object):
         return self._data[name]
 
     def has_errors(self):
-        return False
+        return bool(self._errors)
 
     def has_warnings(self):
-        return False
+        return bool(self._warnings)
+
+    @property
+    def errors(self): return tuple(self._errors)
+
+    @property
+    def warnings(self): return tuple(self._warnings)
 
 
 def main(argv):
