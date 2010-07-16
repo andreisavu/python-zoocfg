@@ -123,6 +123,21 @@ class Rules(object):
         def check(cls, cfg):
             pass
 
+    class ClientPort(BaseRule):
+        """ A valid TCP/IP port >1024 """
+
+        @classmethod
+        def check(cls, cfg):
+            warnings, errors = [], []
+
+            if 'clientPort' not in cfg:
+                errors.append('No `clientPort` found in config file.')
+
+            elif not isinstance(cfg.clientPort, int) or cfg.clientPort < 0 or cfg.clientPort > 65535:
+                errors.append('`clientPort` should be a valid TCP/IP port number.')
+
+            return warnings, errors
+
     class AbsoluteDataDir(BaseRule):
         """ The dataDir should be absolute because ZooKeeper runs as a daemon """
 
