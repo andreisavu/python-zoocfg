@@ -190,6 +190,20 @@ class Rules(object):
 
             return warnings, errors            
 
+    class GlobalOustandingLimit(BaseRule):
+        
+        @classmethod
+        def check(cls, cfg):
+            warnings, errors = [], []
+
+            if 'globalOutstandingLimit' not in cfg:
+                errors.append('No `globalOutstandingLimit` found in config file.')
+
+            elif not isinstance(cfg.globalOutstandingLimit, int) or cfg.globalOutstandingLimit < 0:
+                errors.append('`globalOutstandingLimit` should be a positive integer')
+
+            return warnings, errors
+
     class ElectionAlg(BaseRule):
         """ Check the selected election algorithm """
 
