@@ -6,6 +6,8 @@ Target: ZooKeeper 3.3.x
 
 Author: Andrei Savu -- http://www.andreisavu.ro/  
 
+Development status: Experimental
+
 A Python class for Parsing and Validating ZooKeeper config files.
 
 Usage
