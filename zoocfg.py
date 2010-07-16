@@ -44,6 +44,8 @@ class ZooCfg(dotdict):
         return cls(open(file_name).read())
     
     def __init__(self, content=''):
+        super(ZooCfg, self).__init__()
+
         self.update(self._defaults)
         self.update(self._parse(content))
         self._warnings, self._errors = Rules.check_all(self)
