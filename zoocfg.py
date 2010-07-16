@@ -30,7 +30,7 @@ class ZooCfg(dotdict):
 
     _defaults = dotdict({
         'globalOutstandingLimit': 1000,
-        'preAllocSize': '64M',
+        'preAllocSize': 65536, # 64M in kilobytes
         'snapCount': 100000,
         'maxClientCnxns': 10,
         'minSessionTimeout': 2,
@@ -197,6 +197,20 @@ class Rules(object):
 
             elif not isinstance(cfg.globalOutstandingLimit, int) or cfg.globalOutstandingLimit < 0:
                 errors.append('`globalOutstandingLimit` should be a positive integer')
+
+            return warnings, errors
+
+    class PreAllocSize(BaseRule):
+
+        @classmethod
+        def check(cls, cfg):
+            warnings, errors = [], []
+
+            if 'preAllocSize' not in cfg:
+                errors.append('No `preAllocSize` found in config file.')
+
+            elif not isinstance(cfg.preAllocSize, int) or cfg.preAllocSize < 0:
+                errors.append('`preAllocSize` should be a positive number of kilobytes')
 
             return warnings, errors
 

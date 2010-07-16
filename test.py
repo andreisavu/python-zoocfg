@@ -152,6 +152,10 @@ class TestRules(unittest.TestCase):
         self.check('GlobalOutstandingLimit', 0, 1, globalOutstandingLimit=-5)
         self.check('GlobalOutstandingLimit', 0, 0, globalOutstandingLimit=5)
 
+    def test_preAllocSize(self):
+        self.check('PreAllocSize', 0, 1, preAllocSize=-1)
+        self.check('PreAllocSize', 0, 0, preAllocSize=1024)
+
     def test_ElectionAlg(self):
         self.check('ElectionAlg', 0, 1, electionAlg=5)
         self.check('ElectionAlg', 1, 0, electionAlg=1)
