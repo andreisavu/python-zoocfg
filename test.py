@@ -102,8 +102,21 @@ class TestZooCfg_CommandLine_Interface(CapturingTestCase):
 
     def test_file_param_is_mandatory(self):
         r = zoocfg.main([])
-        assert r == 1
+        assert r == -1 
         assert self.stderr() == 'Config file name is mandatory.\n'
+
+class dotdict(dict):
+    """ Extend the standard dict to allow dot syntax """
+    def __getattr__(self, name):
+        return self[name]
+
+class TestRules(unittest.TestCase):
+
+    def test_absolute_dataDir(self):
+        w, e = zoocfg.Rules.AbsoluteDataDir.check(
+            dotdict(dataDir='./relative-path'))
+
+        assert len(w) == 1 and len(e) == 0
 
 if __name__ == '__main__':
     unittest.main()

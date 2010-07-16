@@ -21,7 +21,7 @@ import sys
 from StringIO import StringIO
 from optparse import OptionParser
 
-class ZooCfg(object):
+class ZooCfg(dict):
 
     _defaults = {
         'globalOutstandingLimit': 1000,
@@ -39,11 +39,10 @@ class ZooCfg(object):
         return cls(open(file_name).read())
     
     def __init__(self, content=''):
-        self._data = dict(self._defaults)
-        self._data.update(self._parse(content))
+        self.update(self._defaults)
+        self.update(self._parse(content))
 
-        self._errors = []
-        self._warnings = []
+        self._warnings, self._errors = Rules.check(self)
 
     def _parse(self, content):
         h = StringIO(content)
@@ -75,7 +74,7 @@ class ZooCfg(object):
             return {} # just skip broken line
 
     def __getattr__(self, name):
-        return self._data[name]
+        return self[name]
 
     def has_errors(self):
         return bool(self._errors)
@@ -89,6 +88,47 @@ class ZooCfg(object):
     @property
     def warnings(self): return tuple(self._warnings)
 
+
+class Rules(object):
+    """ ZooKeeper config validation rules """
+
+    @classmethod
+    def check(cls, cfg):
+        """ Check all configuration rules """
+        warnings, errors = [], []
+
+        for name, ref in Rules.__dict__.items():
+            try:
+                if hasattr(ref, 'mro') and Rules.BaseRule in ref.mro() and ref != Rules.BaseRule:
+                    w, e = ref.check(cfg)
+
+                    warnings.extend(w)
+                    errors.extend(e)
+            except Exception, e:
+                errors.append('`%s` rule check failed: %s' % (name, e))
+
+        return warnings, errors
+
+    class BaseRule(object):
+        """ Inherit from this class when defining a new validation rule """
+        @classmethod
+        def check(cls, cfg):
+            pass
+
+    class AbsoluteDataDir(BaseRule):
+        """ The dataDir should be absolute because ZooKeeper runs as a daemon """
+
+        @classmethod
+        def check(cls, cfg):
+            warnings, errors = [], []
+
+            if 'dataDir' not in cfg:
+                errors.append('No `dataDir` found in config file.')
+
+            elif cfg.dataDir[0] != '/':
+                warnings.append('`dataDir` contains a relative path.')
+
+            return warnings, errors
 
 def main(argv):
     parser = OptionParser()
@@ -106,16 +146,22 @@ def main(argv):
         print >>sys.stderr, "Config file name is mandatory."
 
         parser.print_help()
-        return 1
+        return -1
 
     cfg = ZooCfg.from_file(opts.filename)
-    if cfg.has_errors():
-        # print errors
-        pass
 
+    ret = 0
     if cfg.has_warnings() and opts.warnings is True:
-        # print warnings
-        pass
+        print 'Warnings:'
+        for warning in cfg.warnings: print '* %s' % warning
+        ret = 1
+
+    if cfg.has_errors():
+        print 'Errors:'
+        for error in cfg.errors: print '* %s' % error
+        ret = 2
+
+    return ret
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
