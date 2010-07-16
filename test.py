@@ -127,11 +127,22 @@ class TestZooCfg_CommandLine_Interface(CapturingTestCase):
 
 class TestRules(unittest.TestCase):
 
-    def test_dataDir(self):
-        w, e = zoocfg.Rules.DataDir.check(
-            dotdict(dataDir='./relative-path'))
+    def check(self, cls, warning_count, error_count, **kwargs):
+        w, e = getattr(zoocfg.Rules, cls).check(dotdict(**kwargs))
+        self.assertEqual(len(w), warning_count)
+        self.assertEqual(len(e), error_count)
 
-        assert len(w) == 1 and len(e) == 0
+    def test_clientPort(self):
+        self.check('ClientPort', 1, 0, clientPort=100)
+        self.check('ClientPort', 0, 1, clientPort=10**6)
+
+    def test_tickTime(self):
+        self.check('TickTime', 0, 1, tickTime=-1)
+        self.check('TickTime', 0, 0, tickTime=2000)
+
+    def test_dataDir(self):
+        self.check('DataDir', 1, 0, dataDir='./relative-path')
+        self.check('DataDir', 0, 0, dataDir='/var/run/zookeeper')
 
 if __name__ == '__main__':
     unittest.main()
