@@ -178,7 +178,11 @@ class TestRules(unittest.TestCase):
 
         self.check('SessionTimeout', 0, 1,
             minSessionTimeout=20, maxSessionTimeout=10)
-    
+   
+    def test_initLimit(self):
+        self.check('InitLimit', 0, 0, initLimit=10)
+        self.check('InitLimit', 0, 1, initLimit=-5)
+ 
     def test_ElectionAlg(self):
         self.check('ElectionAlg', 0, 1, electionAlg=5)
         self.check('ElectionAlg', 1, 0, electionAlg=1)

@@ -287,6 +287,22 @@ class Rules(object):
 
             return warnings, errors
 
+    class InitLimit(BaseRule):
+
+        @classmethod
+        def check(cls, cfg):
+            warnings, errors = [], []
+
+            if 'initLimit' not in cfg:
+                errors.append('No `initLimit` found in config file.')
+
+            elif not isinstance(cfg.initLimit, int) or cfg.initLimit < 0:
+                errors.append('`initLimit` should be a positiv number of tick counts.')
+
+            return warnings, errors
+
+    # XXX leaderServers, list of servers, syncLimit, skipACL
+
     class ElectionAlg(BaseRule):
         """ Check the selected election algorithm """
 
