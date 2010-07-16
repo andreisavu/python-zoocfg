@@ -48,7 +48,7 @@ class ZooCfg(dotdict):
 
         self.update(self._defaults)
         self.update(self._parse(content))
-        if 'dataLogDir' not in self:
+        if 'dataLogDir' not in self and 'dataDir' in self:
             self['dataLogDir'] = self['dataDir']
 
         self._warnings, self._errors = Rules.check_all(self)
