@@ -24,6 +24,17 @@ from StringIO import StringIO
 import zoocfg
 from zoocfg import ZooCfg, dotdict
 
+TYPICAL_ZOO_CFG = """\
+tickTime=2000
+dataDir=/var/zookeeper/
+clientPort=2181
+initLimit=5
+syncLimit=2
+server.1=zoo1:2888:3888
+server.2=zoo2:2888:3888
+server.3=zoo3:2888:3888
+"""
+
 def abspath(*args):
     current_dir = os.path.dirname(os.path.realpath(__file__))
     return os.path.join(current_dir, *args)
@@ -67,6 +78,22 @@ class TestZooCfg(unittest.TestCase):
         cfg = ZooCfg('a=5 # ignored\nb=6')
 
         assert cfg.a == 5 and cfg.b == 6
+
+    def test_get_list_of_servers(self):
+        cfg = ZooCfg(TYPICAL_ZOO_CFG)
+
+        servers = cfg.get_servers()
+        assert len(servers) == 3
+        assert servers[0].port == 2888
+        assert servers[0].election_port == 3888
+
+    def test_get_list_of_servers_with_invalid_id(self):
+        cfg = ZooCfg("server.0=localhost:2888:3888")
+        self.assertRaises(ValueError, cfg.get_servers)
+
+        cfg = ZooCfg("server.256=localhost:2888:3888")
+        self.assertRaises(ValueError, cfg.get_servers)
+
 
 class CapturingTestCase(unittest.TestCase):
 

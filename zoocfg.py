@@ -17,6 +17,7 @@
 # limitations under the License.
 
 import sys
+import re
 
 from StringIO import StringIO
 from optparse import OptionParser
@@ -39,6 +40,29 @@ class ZooCfg(dotdict):
         'leaderServers': 'yes'
     })
 
+    class Server(object):
+
+        @property
+        def id(self): return self._id
+
+        @property
+        def host(self): return  self._host
+
+        @property
+        def port(self): return self._port
+
+        @property
+        def election_port(self): return self._election_port
+
+        def __init__(self, id, cfg):
+            self._id = id
+            self._cfg = cfg
+            
+            host, port, election_port = cfg.split(':')
+            self._host = host
+            self._port = int(port)
+            self._election_port = int(election_port)
+
     @classmethod
     def from_file(cls, file_name):
         return cls(open(file_name).read())
@@ -50,6 +74,20 @@ class ZooCfg(dotdict):
         self.update(self._parse(content))
         if 'dataLogDir' not in self and 'dataDir' in self:
             self['dataLogDir'] = self['dataDir']
+
+    def get_servers(self):
+        """ Return the list of servers listed in the config file """
+        result = {}
+        for key, value in self.iteritems():
+            m = re.match('server.(\d+)', key)
+            if m is not None:
+                id = int(m.group(1))
+                if id < 1 or id > 255:
+                    raise ValueError, "Server ID should be an " \
+                        "integer value between 1 and 255. " \
+                        "Got `%s`." % id
+                result[id] = ZooCfg.Server(id, value)
+        return result.values()
 
     def _parse(self, content):
         h = StringIO(content)
