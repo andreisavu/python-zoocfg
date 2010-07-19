@@ -182,12 +182,14 @@ class Rules(object):
                 errors.append('`clientPort` should be a valid TCP/IP port number.')
 
             elif cfg.clientPort < 1024:
-                warnings.append('`clientPort` < 1024. You should not run ZooKeeper using the root account')
+                warnings.append('`clientPort` < 1024. You should not run '\
+                    'ZooKeeper using the root account')
 
             return warnings, errors
 
     class TickTime(BaseRule):
-        """ The length of a single tick, which is the basic time unit used by ZooKeeper, measured in milliseconds"""
+        """ The length of a single tick, which is the basic time unit used by 
+        ZooKeeper, measured in milliseconds"""
 
         @classmethod
         def check(cls, cfg):
@@ -308,7 +310,8 @@ class Rules(object):
                 errors.append('`maxClientCnxns` should be a positive integer or 0.')
 
             elif cfg.maxClientCnxns == 0:
-                warnings.append('`maxClientCnxns` is set to 0. The server is vulnerable to DOS attacks.')
+                warnings.append('`maxClientCnxns` is set to 0. '\
+                    'The server is vulnerable to DOS attacks.')
 
             return warnings, errors
 
