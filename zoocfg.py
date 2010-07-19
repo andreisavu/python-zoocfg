@@ -63,6 +63,10 @@ class ZooCfg(dotdict):
             self._port = int(port)
             self._election_port = int(election_port)
 
+        def __repr__(self):
+            return '<ZooCfg.Server id="%s" '\
+                'cfg="%s">' % (self._id, self._cfg)
+
     @classmethod
     def from_file(cls, file_name):
         return cls(open(file_name).read())
@@ -86,6 +90,9 @@ class ZooCfg(dotdict):
                     raise ValueError, "Server ID should be an " \
                         "integer value between 1 and 255. " \
                         "Got `%s`." % id
+                if id in result:
+                    raise ValueError, "Duplicate server id "\
+                        "`server.%s`." % id
                 result[id] = ZooCfg.Server(id, value)
         return result.values()
 
@@ -102,7 +109,11 @@ class ZooCfg(dotdict):
             if not line.strip():
                 continue
 
-            result.update(self._parse_line(line))
+            for k, v in self._parse_line(line).iteritems():
+                if k in result:
+                    raise ValueError, 'Duplicate key '\
+                        '`%s` found in config file.' % k
+                result[k] = v
         return result
 
     def _parse_line(self, line):

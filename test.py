@@ -94,6 +94,9 @@ class TestZooCfg(unittest.TestCase):
         cfg = ZooCfg("server.256=localhost:2888:3888")
         self.assertRaises(ValueError, cfg.get_servers)
 
+    def test_duplicate_key_in_config_file(self):
+        self.assertRaises(ValueError, ZooCfg, 
+            "server.2=s1:2888:3888\nserver.2=s2:2888:3888\n")
 
 class CapturingTestCase(unittest.TestCase):
 
