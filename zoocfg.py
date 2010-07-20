@@ -60,7 +60,7 @@ class ZooCfg(dotdict):
             self._id = id
             self._cfg = cfg
             
-            host, port, election_port = cfg.split(':')
+            host, port, election_port = cfg.split(':')[:3]
             self._host = host
             self._port = int(port)
             self._election_port = int(election_port)
