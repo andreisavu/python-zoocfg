@@ -38,6 +38,7 @@ class ZooCfg(dotdict):
         'maxSessionTimeout': 20,
         'electionAlg': 3,
         'leaderServers': 'yes'
+#       'syncLimit':  10
     })
 
     class Server(object):
@@ -390,7 +391,18 @@ class Rules(object):
 
             return warnings, errors
 
-    # XXX list of servers, syncLimit, skipACL
+    class SyncLimit(BaseRule):
+
+        @classmethod
+        def check(cls, cfg):
+            warnings, errors = [], []
+
+            if 'syncLimit' in cfg and (not isinstance(cfg.syncLimit, int) or cfg.syncLimit < 0):
+                errors.append('`syncLimit` should be a positive number of ticks')
+
+            return warnings, errors
+
+    # XXX list of servers, skipACL
 
 def main(argv):
     parser = OptionParser()

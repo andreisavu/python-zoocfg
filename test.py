@@ -229,6 +229,10 @@ class TestRules(unittest.TestCase):
         cfg = ZooCfg.from_file(abspath('samples/replicated-zoo.cfg'))
         self.check('LeaderServers', 1, 0, cfg)
 
+    def test_syncLimit(self):
+        self.check('SyncLimit', 0, 1, syncLimit=-5)
+        self.check('SyncLimit', 0, 0, syncLimit=2)
+
 if __name__ == '__main__':
     unittest.main()
 
