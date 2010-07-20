@@ -34,6 +34,26 @@ This class can be used in two ways:
     ./zoocfg.py -f zoo.cfg -w
     -- will output errors and warnings found while checking the rules
 
+Typical output
+--------------
+
+
+$ ./zoocfg.py -f samples/standalone-zoo.cfg -w
+Warnings:
+* You should run at least 3 ZooKeeper servers.
+
+* The `dataLogDir` should not use the same partition as `dataDir` in order to avoid competition between logging and snapshots. Having a dedicated log device has a large impact on throughput and stable latencies.
+
+
+$ ./zoocfg.py -f samples/replicated-zoo.cfg -w
+Warnings:
+* The `dataLogDir` should not use the same partition as `dataDir` in order to avoid competition between logging and snapshots. Having a dedicated log device has a large impact on throughput and stable latencies.
+
+* `dataDir` contains a relative path. This could be a problem if ZooKeeper is running as daemon.
+
+* Your ensemble contains more than 3 servers. It's recommended to set `leaderServers` to `no`. This willallow the leader to focus only on coordination.
+
+
 ZooKeeper config rules
 ----------------------
 
