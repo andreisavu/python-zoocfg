@@ -138,6 +138,8 @@ class TestZooCfg_CommandLine_Interface(CapturingTestCase):
     def test_run_checks_on_standalone_config(self):
         r = zoocfg.main(['-f', 'samples/standalone-zoo.cfg', '-w'])
         output = """Warnings:
+* You should run at least 3 ZooKeeper servers.
+
 * The `dataLogDir` should not use the same partition as `dataDir` in order to avoid competition between logging and snapshots. Having a dedicated log device has a large impact on throughput and stable latencies.
 
 """
@@ -232,6 +234,15 @@ class TestRules(unittest.TestCase):
     def test_syncLimit(self):
         self.check('SyncLimit', 0, 1, syncLimit=-5)
         self.check('SyncLimit', 0, 0, syncLimit=2)
+
+    def test_skipACL(self):
+        self.check('SkipACL', 0, 1, skipACL='dummy')
+        self.check('SkipACL', 1, 0, skipACL='yes')
+
+    def test_oddNumberOfServers(self):
+        self.check('OddNumberOfServers', 1, 0, get_servers=lambda: [])
+        self.check('OddNumberOfServers', 1, 0, get_servers=lambda: range(1,5))
+        self.check('OddNumberOfServers', 0, 0, get_servers=lambda: range(1,4))
 
 if __name__ == '__main__':
     unittest.main()

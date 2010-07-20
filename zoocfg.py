@@ -37,7 +37,8 @@ class ZooCfg(dotdict):
         'minSessionTimeout': 2,
         'maxSessionTimeout': 20,
         'electionAlg': 3,
-        'leaderServers': 'yes'
+        'leaderServers': 'yes',
+        'skipACL': 'no',
 #       'syncLimit':  10
     })
 
@@ -402,7 +403,39 @@ class Rules(object):
 
             return warnings, errors
 
-    # XXX list of servers, skipACL
+    class SkipACL(BaseRule):
+
+        @classmethod
+        def check(cls, cfg):
+            warnings, errors = [], []
+
+            if 'skipACL' not in cfg:
+                errors.append('No `skipACL` found in config file.')
+
+            elif cfg.skipACL not in ('yes', 'no'):
+                errors.append('`skipACL` should be "yes" or "no".')
+
+            elif cfg.skipACL == 'yes':
+                warnings.append('`skipACL` is `yes`. This results'\
+                    ' in a boost in throughput, but opens up full '\
+                    'access to the data tree to everyone.')
+
+            return warnings, errors
+
+    class OddNumberOfServers(BaseRule):
+
+        @classmethod
+        def check(cls, cfg):
+            warnings, errors = [], []
+
+            count = len(cfg.get_servers())
+            if count < 3:
+                warnings.append('You should run at least 3 ZooKeeper servers.')
+
+            elif count % 2 == 0:
+                warnings.append('You should run an odd number of servers.')
+
+            return warnings, errors
 
 def main(argv):
     parser = OptionParser()
