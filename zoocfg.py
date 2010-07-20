@@ -353,8 +353,6 @@ class Rules(object):
 
             return warnings, errors
 
-    # XXX leaderServers, list of servers, syncLimit, skipACL
-
     class ElectionAlg(BaseRule):
         """ Check the selected election algorithm """
 
@@ -372,6 +370,27 @@ class Rules(object):
                 warnings.append('Election algorithm implementation 1 and 2 are no longer supported.')
 
             return warnings, errors
+
+    class LeaderServers(BaseRule):
+
+        @classmethod
+        def check(cls, cfg):
+            warnings, errors = [], []
+
+            if 'leaderServers' not in cfg:
+                errors.append('No `leaderServers` found in config file.')
+
+            elif cfg.leaderServers not in ('yes', 'no'):
+                errors.append('`leaderServers` should be "yes" or "no".')
+
+            elif len(cfg.get_servers()) > 3:
+                warnings.append('Your ensemble contains more than 3 servers. '\
+                    'It\'s recommended to set `leaderServers` to `no`. This will'\
+                    'allow the leader to focus only on coordination.')
+
+            return warnings, errors
+
+    # XXX list of servers, syncLimit, skipACL
 
 def main(argv):
     parser = OptionParser()

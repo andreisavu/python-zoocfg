@@ -151,14 +151,19 @@ class TestZooCfg_CommandLine_Interface(CapturingTestCase):
 
 * `dataDir` contains a relative path. This could be a problem if ZooKeeper is running as daemon.
 
+* Your ensemble contains more than 3 servers. It's recommended to set `leaderServers` to `no`. This willallow the leader to focus only on coordination.
+
 """
         assert r == 1
         assert self.stdout() == output
 
 class TestRules(unittest.TestCase):
 
-    def check(self, cls, warning_count, error_count, **kwargs):
-        w, e = getattr(zoocfg.Rules, cls).check(dotdict(**kwargs))
+    def check(self, cls, warning_count, error_count, cfg=None, **kwargs):
+        if cfg is None:
+            cfg = dotdict(**kwargs)
+
+        w, e = getattr(zoocfg.Rules, cls).check(cfg)
         self.assertEqual(len(w), warning_count)
         self.assertEqual(len(e), error_count, str(e))
 
@@ -217,6 +222,12 @@ class TestRules(unittest.TestCase):
         self.check('ElectionAlg', 0, 1, electionAlg=5)
         self.check('ElectionAlg', 1, 0, electionAlg=1)
         self.check('ElectionAlg', 0, 0, electionAlg=3)
+
+    def test_leaderServers(self):
+        self.check('LeaderServers', 0, 1, leaderServers='dummy')
+        
+        cfg = ZooCfg.from_file(abspath('samples/replicated-zoo.cfg'))
+        self.check('LeaderServers', 1, 0, cfg)
 
 if __name__ == '__main__':
     unittest.main()
