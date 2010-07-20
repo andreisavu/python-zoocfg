@@ -65,6 +65,12 @@ class ZooCfg(dotdict):
             self._port = int(port)
             self._election_port = int(election_port)
 
+            if not (1 < self._port < 65535):
+                raise ValueError, 'Invalid server port number: %d' % self._port
+
+            if not (1 < self._election_port < 65535):
+                raise ValueError, 'Invalid election port number: %d' % self._election_port
+
         def __repr__(self):
             return '<ZooCfg.Server id="%s" '\
                 'cfg="%s">' % (self._id, self._cfg)
